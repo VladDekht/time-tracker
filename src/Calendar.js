@@ -6,6 +6,22 @@ import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import { withStyles } from '@material-ui/core/styles';
+import AddIcon from '@material-ui/icons/Add';
+import TimeTrackModal from './TimeTrackModal';
+import moment, { monthsShort } from 'moment';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import CalendarDay from './CalendarDay';
+import FormControl from '@material-ui/core/FormControl';
+import InputLabel from '@material-ui/core/InputLabel';
+import Input from '@material-ui/core/Input';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
+import TextField from '@material-ui/core/TextField';
+
 
 
 const styles = theme => ({
@@ -29,92 +45,145 @@ class Calendar extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            weekdays: [
-                { id: 0, name: 'Monday' },
-                { id: 1, name: 'Tueseday' },
-                { id: 2, name: 'Wednesday' },
-                { id: 3, name: 'Thursday' },
-                { id: 4, name: 'Friday' },
-                { id: 5, name: 'Saturday' },
-                { id: 6, name: 'Sunday' }
-            ],
-            weeks: [
-                {
-                    number: 1, days: [
-                        { number: 1 },
-                        { number: 2 },
-                        { number: 3 },
-                        { number: 4 },
-                        { number: 5 },
-                        { number: 6 },
-                        { number: 7 },
-                    ]
-                },
-                {
-                    number: 2, days: [
-                        { number: 8 },
-                        { number: 9 },
-                        { number: 10 },
-                        { number: 11 },
-                        { number: 12 },
-                        { number: 13 },
-                        { number: 14 },
-                    ]
-                }
-            ]
+            dateContext: moment(),
+            today: moment(),
+            showMonthPopus: false,
+            showYearPopup: false
         }
     }
 
+    weekdays = moment.weekdays();
+    weekdaysShort = moment.weekdaysShort();
+    months = moment.months();
+    monthsShort = moment.monthsShort();
+
+    getYear = () => {
+        return this.state.dateContext.format('YYYY');
+    }
+    getMonth = () => {
+        return this.state.dateContext.month();
+    }
+    getDaysInMonth = () => {
+        console.log(this.state.dateContext.daysInMonth())
+        return this.state.dateContext.daysInMonth();
+    }
+    getCurrentDate = () => {
+        return this.state.dateContext.get('date');
+    }
+    getCurrentDay = () => {
+        return this.state.dateContext.format('DD');
+    }
+
+    getFirstDayOfMonth = () => {
+        let dateContext = this.state.dateContext;
+        let firstDay = moment(dateContext).startOf('month').format('d');
+        return firstDay;
+    }
+    setMonth = (event) => {
+        let newMonth = event.target.value;
+        this.setState({ dateContext: moment(this.state.dateContext).set('month', newMonth) })
+    }
+    setYear = (event) => {
+        let newYear = event.target.value;
+        this.setState({ dateContext: moment(this.state.dateContext).set('year', newYear) })
+    }
+
+
     render() {
+        let weekdays = this.weekdaysShort.map((weekday) => (
+            <TableCell>
+                {weekday}
+            </TableCell>))
+
+        let blanks = [];
+        for (let i = 0; i < this.getFirstDayOfMonth(); i++) {
+            blanks.push('');
+        }
+        let daysInMonth = [];
+        for (let i = 0; i < this.getDaysInMonth(); i++) {
+            daysInMonth.push(
+                i + 1
+            );
+        }
+
+        let displayElems = [].concat(...blanks, ...daysInMonth);
+        console.log(displayElems)
+        let rows = [];
+        let cells = [];
+        displayElems.map((day, index) => {
+            if (index % 7 !== 0) {
+                cells.push(day);
+            }
+            else {
+                let insertRow = cells.slice();
+                if (insertRow.length > 0) {
+                    rows.push(insertRow);
+                }
+                cells = [];
+                cells.push(day);
+            }
+            if (index === displayElems.length - 1) {
+                let insertRow = cells.slice();
+                if (insertRow.length > 0) {
+                    rows.push(insertRow);
+                }
+                cells = [];
+            }
+        })
         const { classes } = this.props;
         return (
             <Card>
-                <div className={classes.root}>
-                    <Grid container className={classes.root} spacing={16}>
-                        <Grid item xs={12}>
-                            <Grid container className={classes.header} justify="center" spacing={16}>
-                                {this.state.weekdays.map(weekday => (
-                                    <Grid key={weekday.id} item>
-                                        {weekday.name}
-                                    </Grid>
-                                ))}
-                            </Grid>
-                            {this.state.weeks.map(week => (
-                                <Grid container className={classes.demo} justify="center" spacing={16}>
-                                    {week.days.map(day => (
-                                        <Grid key={day.number} item>
-                                            <CalendarDay
-                                                key={day.number}
-                                                classes={classes}
-                                                day={day.number}
-                                            />
-                                        </Grid>
-                                    ))}
-                                </Grid>
-                            ))}
+                <div>
+                    <form autoComplete="off" noValidate>
+                        <FormControl className={classes.formControl} >
+                            <InputLabel htmlFor="month-select">Month</InputLabel>
+                            <Select
+                                value={this.getMonth()}
+                                onChange={this.handleChange}
+                                inputProps={{
+                                    name: 'month',
+                                    id: 'month-select',
+                                }}
+                                disableUnderline
 
-                        </Grid>
-                    </Grid>
+                                onChange={(e) => this.setMonth(e)}
+                            >
+                                {this.monthsShort.map((month, index) =>
+                                    <MenuItem value={index}>{month}</MenuItem>
+                                )}
+                            </Select>
+                        </FormControl>
+                    </form>
+                    <Input
+                        defaultValue={this.getYear()}
+                        //className={classes.input}
+                        inputType='number'
+                        disableUnderline
+                        onChange={e => this.setYear(e)}
+                    />
+                    <Table>
+                        <TableHead>
+                            <TableRow>
+                                {weekdays}
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {rows.map((row) =>
+                                (<TableRow>
+                                    {row.map((day) =>
+                                        (<TableCell>
+                                            {day !== '' ? <CalendarDay
+                                                day={day}
+                                                loggedHours={0}
+                                            /> : null}
+
+                                        </TableCell>)
+                                    )}
+                                </TableRow>))}
+                        </TableBody>
+                    </Table>
                 </div>
 
-            </Card>
-        );
-    }
-}
-
-class CalendarDay extends Component {
-    constructor(props) {
-        super(props);
-    }
-
-    render() {
-        return (
-            <Card className={this.props.classes.paper} >
-                <CardContent>
-                    <Typography className={this.props.classes.title} color="textSecondary">
-                        {this.props.day}
-                    </Typography>
-                </CardContent>
             </Card>
         );
     }
