@@ -45,11 +45,10 @@ class Calendar extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            dateContext: moment(),
-            today: moment(),
             showMonthPopus: false,
             showYearPopup: false
         }
+        console.log('props',this.props)
     }
 
     weekdays = moment.weekdays();
@@ -58,34 +57,44 @@ class Calendar extends Component {
     monthsShort = moment.monthsShort();
 
     getYear = () => {
-        return this.state.dateContext.format('YYYY');
+        return this.props.dateContext.format('YYYY');
     }
     getMonth = () => {
-        return this.state.dateContext.month();
+        return this.props.dateContext.month();
     }
     getDaysInMonth = () => {
-        console.log(this.state.dateContext.daysInMonth())
-        return this.state.dateContext.daysInMonth();
+        console.log(this.props.dateContext.daysInMonth())
+        return this.props.dateContext.daysInMonth();
     }
     getCurrentDate = () => {
-        return this.state.dateContext.get('date');
+        return this.props.dateContext.get('date');
     }
     getCurrentDay = () => {
-        return this.state.dateContext.format('DD');
+        return this.props.dateContext.format('DD');
     }
 
     getFirstDayOfMonth = () => {
-        let dateContext = this.state.dateContext;
+        let dateContext = this.props.dateContext;
         let firstDay = moment(dateContext).startOf('month').format('d');
         return firstDay;
     }
     setMonth = (event) => {
-        let newMonth = event.target.value;
-        this.setState({ dateContext: moment(this.state.dateContext).set('month', newMonth) })
+        let month = event.target.value;
+        this.props.setMonth(month);
     }
     setYear = (event) => {
         let newYear = event.target.value;
-        this.setState({ dateContext: moment(this.state.dateContext).set('year', newYear) })
+        if(this.validateYearInput(newYear)){
+            this.props.setYear(newYear);
+        }
+    }
+
+    validateYearInput = (year) => {
+        var regex = /(19[0-9][0-9]|20[0-3][0-9])/;
+        if(regex.test(year)){
+            return true;
+        }
+        return false;
     }
 
 
@@ -159,7 +168,7 @@ class Calendar extends Component {
                         //className={classes.input}
                         inputType='number'
                         disableUnderline
-                        onChange={e => this.setYear(e)}
+                        onChange={e => {this.setYear(e)}}
                     />
                     <Table>
                         <TableHead>
