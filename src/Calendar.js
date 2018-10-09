@@ -21,6 +21,7 @@ import Input from '@material-ui/core/Input';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import TextField from '@material-ui/core/TextField';
+import CardActions from '@material-ui/core/CardActions';
 
 
 
@@ -38,6 +39,12 @@ const styles = theme => ({
     title: {
         marginBottom: 16,
         fontSize: 14,
+    },
+    tableRow: {
+        padding: '0 !important',
+    },
+    tableCell: {
+        padding: '0 !important',
     }
 });
 
@@ -48,7 +55,7 @@ class Calendar extends Component {
             showMonthPopus: false,
             showYearPopup: false
         }
-        console.log('props',this.props)
+        console.log('props', this.props)
     }
 
     weekdays = moment.weekdays();
@@ -63,7 +70,6 @@ class Calendar extends Component {
         return this.props.dateContext.month();
     }
     getDaysInMonth = () => {
-        console.log(this.props.dateContext.daysInMonth())
         return this.props.dateContext.daysInMonth();
     }
     getCurrentDate = () => {
@@ -78,20 +84,25 @@ class Calendar extends Component {
         let firstDay = moment(dateContext).startOf('month').format('d');
         return firstDay;
     }
+    getLastDayOfMonth = () => {
+        let dateContext = this.props.dateContext;
+        let lastDay = moment(dateContext).endOf('month').format('d');
+        return lastDay;
+    }
     setMonth = (event) => {
         let month = event.target.value;
         this.props.setMonth(month);
     }
     setYear = (event) => {
         let newYear = event.target.value;
-        if(this.validateYearInput(newYear)){
+        if (this.validateYearInput(newYear)) {
             this.props.setYear(newYear);
         }
     }
 
     validateYearInput = (year) => {
         var regex = /(19[0-9][0-9]|20[0-3][0-9])/;
-        if(regex.test(year)){
+        if (regex.test(year)) {
             return true;
         }
         return false;
@@ -108,6 +119,10 @@ class Calendar extends Component {
         for (let i = 0; i < this.getFirstDayOfMonth(); i++) {
             blanks.push('');
         }
+        let endBlanks = [];
+        for (let i = 6; i > this.getLastDayOfMonth(); i--) {
+            endBlanks.push('');
+        }
         let daysInMonth = [];
         for (let i = 0; i < this.getDaysInMonth(); i++) {
             daysInMonth.push(
@@ -115,8 +130,7 @@ class Calendar extends Component {
             );
         }
 
-        let displayElems = [].concat(...blanks, ...daysInMonth);
-        console.log(displayElems)
+        let displayElems = [].concat(...blanks, ...daysInMonth, ...endBlanks);
         let rows = [];
         let cells = [];
         displayElems.map((day, index) => {
@@ -143,33 +157,8 @@ class Calendar extends Component {
         return (
             <Card>
                 <div>
-                    <form autoComplete="off" noValidate>
-                        <FormControl className={classes.formControl} >
-                            <InputLabel htmlFor="month-select">Month</InputLabel>
-                            <Select
-                                value={this.getMonth()}
-                                onChange={this.handleChange}
-                                inputProps={{
-                                    name: 'month',
-                                    id: 'month-select',
-                                }}
-                                disableUnderline
 
-                                onChange={(e) => this.setMonth(e)}
-                            >
-                                {this.monthsShort.map((month, index) =>
-                                    <MenuItem value={index}>{month}</MenuItem>
-                                )}
-                            </Select>
-                        </FormControl>
-                    </form>
-                    <Input
-                        defaultValue={this.getYear()}
-                        //className={classes.input}
-                        inputType='number'
-                        disableUnderline
-                        onChange={e => {this.setYear(e)}}
-                    />
+
                     <Table>
                         <TableHead>
                             <TableRow>
@@ -178,12 +167,12 @@ class Calendar extends Component {
                         </TableHead>
                         <TableBody>
                             {rows.map((row) =>
-                                (<TableRow>
+                                (<TableRow className={classes.tableRow}>
                                     {row.map((day) =>
-                                        (<TableCell>
+                                        (<TableCell className={classes.tableCell}>
                                             {day !== '' ? <CalendarDay
                                                 day={day}
-                                                loggedHours={0}
+                                                loggedHours={Math.floor(Math.random() * 10)}
                                             /> : null}
 
                                         </TableCell>)
@@ -192,7 +181,41 @@ class Calendar extends Component {
                         </TableBody>
                     </Table>
                 </div>
+                <CardActions>
+                    <div>
+                        <div>
+                            <FormControl className={classes.formControl} >
+                                <InputLabel htmlFor="month-select">Month</InputLabel>
+                                <Select
+                                    value={this.getMonth()}
+                                    onChange={this.handleChange}
+                                    inputProps={{
+                                        name: 'month',
+                                        id: 'month-select',
+                                    }}
+                                    disableUnderline
 
+                                    onChange={(e) => this.setMonth(e)}
+                                >
+                                    {this.monthsShort.map((month, index) =>
+                                        <MenuItem value={index}>{month}</MenuItem>
+                                    )}
+                                </Select>
+                            </FormControl>
+                        </div>
+                        <div>
+                            <Input
+                                defaultValue={this.getYear()}
+                                //className={classes.input}
+                                inputType='number'
+                                disableUnderline
+                                onChange={e => { this.setYear(e) }}
+                            />
+                        </div>
+
+                    </div>
+
+                </CardActions>
             </Card>
         );
     }
