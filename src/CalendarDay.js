@@ -51,7 +51,7 @@ class CalendarDay extends Component {
                     <CardHeader title={this.state.day} />
                     <CardContent>
                         <Typography>
-                            Total: {this.state.loggedHours} hours
+                            Total: {this.props.loggedHours} hours
                     </Typography>
 
                         {this.state.showTrackModal ?

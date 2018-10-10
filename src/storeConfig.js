@@ -1,6 +1,5 @@
 import { createStore } from 'redux';
-import dateChanges from './rootReducer';
-import moment from 'moment';
-import {initialState} from './rootReducer';
+import rootReducer from './Reducers/index';
+import initialState from './Reducers/index';
 
-export const store = createStore(dateChanges, initialState);
+export const store = createStore(rootReducer, initialState);

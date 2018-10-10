@@ -1,24 +1,24 @@
-import React, { Component } from "react";
+import React, { Component} from "react";
+import Button from '@material-ui/core/Button';
 import "./App.css";
 import Calendar from "./Calendar";
 import ButtonAppBar from "./AppBar";
 import { connect } from "react-redux";
 import { setMonth, setYear } from "./actions";
 import firebase from "firebase";
+//import fire from './Fire';
 
-var config = {
-  apiKey: "AIzaSyC2ychCx-8V5Z-JrHbxayTEFt2J54XtTv8",
-  authDomain: "time-tracker-b99e6.firebaseapp.com",
-  databaseURL: "https://time-tracker-b99e6.firebaseio.com",
-  projectId: "time-tracker-b99e6",
-  storageBucket: "",
-  messagingSenderId: "938595081363"
-};
-firebase.initializeApp(config);
 
 class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      user: {}
+    }
+  }
+
+
   render() {
-    console.log("app props", this.props);
     return (
       <div className="App">
         <ButtonAppBar />

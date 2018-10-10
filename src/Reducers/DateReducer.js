@@ -1,10 +1,7 @@
 import moment from 'moment';
 
-export const initialState = {
-    dateContext: moment()
-}
 
-const dateChanges = (state, action) => {
+export default (state = {}, action) => {
     console.log('state',state);
     console.log('action',action);
     switch (action.type) {
@@ -16,5 +13,3 @@ const dateChanges = (state, action) => {
             return state
     }
 }
-
-export default dateChanges;
