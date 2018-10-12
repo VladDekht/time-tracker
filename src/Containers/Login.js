@@ -3,8 +3,11 @@ import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import PostCard from './../Components/PostCard';
 import { Button, Input } from '@material-ui/core';
+import { login, getUser } from '../Actions/UserActions';
+import { connect } from "react-redux";
 
-export default class Login extends Component {
+
+class Login extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -12,7 +15,16 @@ export default class Login extends Component {
             password: ''
         }
     }
+    componentWillMount() {
+        this.props.getUser();
+    }
 
+    login = () => {
+        this.props.login(this.state.email, this.state.password).then(response => {
+            localStorage.setItem('userEmail', response.user.email);
+            this.props.history.replace('/');
+        }).catch(err => { console.log(err) })
+    }
     render() {
         return (
             <PostCard
@@ -45,11 +57,13 @@ export default class Login extends Component {
                 footer={'Footer'}
                 actions={
                     <div>
-                        <Button onClick = {() => {this.props.history.push('/CreateAccount')}}>Create Account</Button>
-                        <Button>Login</Button>
+                        <Button onClick={() => { this.props.history.push('/CreateAccount') }}>Create Account</Button>
+                        <Button onClick={this.login}>Login</Button>
 
                     </div>}
             />
         );
     }
 }
+
+export default connect(null, { login, getUser })(Login);

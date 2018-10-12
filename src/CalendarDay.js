@@ -12,14 +12,27 @@ import TimeTrackModal from './TimeTrackModal';
 class CalendarDay extends Component {
     constructor(props) {
         super(props);
+        
         this.state = {
             day: this.props.day,
+            date: this.props.date,
+            hours: 0,
             showAddButton: false,
-            loggedHours: this.props.loggedHours,
             showTrackModal: false
         }
+        console.log(this.state.day)
     }
-
+    static getDerivedStateFromProps(props,state) {
+        let keys = Object.keys(props.logs);
+        let hours = 0;
+        for(let key of keys){
+            if (props.logs[key].date.localeCompare(props.date) === 0) {
+                hours = parseInt(props.logs[key].hours);
+                break;
+            }
+        }
+        return ({hours: hours})
+    }
     showAddButton = () => {
         this.setState({ showAddButton: true })
     }
@@ -45,23 +58,24 @@ class CalendarDay extends Component {
             <Card
                 onMouseEnter={this.showAddButton}
                 onMouseLeave={this.hideAddButton}
-                style = {{boxShadow: 'none', backgroundColor: (this.props.loggedHours > 0 ? (this.props.loggedHours > 4 ? (this.props.loggedHours > 8 ? '#F7E4E4' : '#f5f587') : '#DCF7D7') : '#E3E3E3')}}
+                style = {{boxShadow: 'none', 
+                backgroundColor: (this.state.hours > 0 ? (this.state.hours > 4 ? (this.state.hours > 8 ? '#F7E4E4' : '#f5f587') : '#DCF7D7') : '#E3E3E3')}}
             >
                 <CardActionArea onClick={this.openTrackModal} style ={{width: '100%', height : '100%'}}>
                     <CardHeader title={this.state.day} />
                     <CardContent>
                         <Typography>
-                            Total: {this.props.loggedHours} hours
+                            Total: {this.state.hours} hours
                     </Typography>
 
                         {this.state.showTrackModal ?
                             <TimeTrackModal
                                 open={this.state.showTrackModal}
                                 onClose={this.closeTrackModal}
+                                {...this.props}
                             />
                             : null}
                     </CardContent>
-                    {/*this.state.showAddButton ? <Button onClick={this.openTrackModal}><AddIcon /></Button> : null*/}
                 </CardActionArea>
             </Card>
         );

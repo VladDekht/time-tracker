@@ -7,6 +7,10 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
+import { logout } from './Actions/UserActions';
+import { connect } from "react-redux";
+import { compose } from 'redux';
+
 
 const styles = {
   root: {
@@ -21,27 +25,47 @@ const styles = {
   },
 };
 
-function ButtonAppBar(props) {
-  const { classes } = props;
-  return (
-    <div className={classes.root}>
-      <AppBar position="static">
-        <Toolbar>
-          <IconButton className={classes.menuButton} color="inherit" aria-label="Menu">
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="title" color="inherit" className={classes.grow}>
-            Calendar
-          </Typography>
-          <Button color="inherit">Login</Button>
-        </Toolbar>
-      </AppBar>
-    </div>
-  );
+
+class ButtonAppBar extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+
+
+  logout = () => {
+    this.props.logout().then(() => {
+      localStorage.removeItem('userEmail');
+      this.props.history.push('/login');
+    });
+  }
+
+  render() {
+    const { classes } = this.props;
+    return (
+      <div className={classes.root}>
+        <AppBar position="static">
+          <Toolbar>
+            <IconButton className={classes.menuButton} color="inherit" aria-label="Menu">
+              <MenuIcon />
+            </IconButton>
+            <Typography variant="title" color="inherit" className={classes.grow}>
+              Calendar
+            </Typography>
+            {localStorage.userEmail ?
+              <div>
+                <Typography color ="inherit">{localStorage.getItem('userEmail')}</Typography>
+                <Button color="inherit" onClick={this.logout}>Logout</Button>
+              </div>
+              : <Button color="inherit" onClick = {this.props.history.push('/login')}>Login</Button>}
+          </Toolbar>
+        </AppBar>
+      </div>
+    );
+  }
 }
 
 ButtonAppBar.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(ButtonAppBar);
+export default compose(withStyles(styles), connect(null, { logout }))(ButtonAppBar);

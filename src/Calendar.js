@@ -52,10 +52,11 @@ class Calendar extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            logs: this.props.logs,
+            dateContext: moment(),
             showMonthPopus: false,
             showYearPopup: false
         }
-        console.log('props', this.props)
     }
 
     weekdays = moment.weekdays();
@@ -64,39 +65,39 @@ class Calendar extends Component {
     monthsShort = moment.monthsShort();
 
     getYear = () => {
-        return this.props.dateContext.format('YYYY');
+        return this.state.dateContext.format('YYYY');
     }
     getMonth = () => {
-        return this.props.dateContext.month();
+        return this.state.dateContext.month();
     }
     getDaysInMonth = () => {
-        return this.props.dateContext.daysInMonth();
+        return this.state.dateContext.daysInMonth();
     }
     getCurrentDate = () => {
-        return this.props.dateContext.get('date');
+        return this.state.dateContext.get('date');
     }
     getCurrentDay = () => {
-        return this.props.dateContext.format('DD');
+        return this.state.dateContext.format('DD');
     }
 
     getFirstDayOfMonth = () => {
-        let dateContext = this.props.dateContext;
+        let dateContext = this.state.dateContext;
         let firstDay = moment(dateContext).startOf('month').format('d');
         return firstDay;
     }
     getLastDayOfMonth = () => {
-        let dateContext = this.props.dateContext;
+        let dateContext = this.state.dateContext;
         let lastDay = moment(dateContext).endOf('month').format('d');
         return lastDay;
     }
     setMonth = (event) => {
         let month = event.target.value;
-        this.props.setMonth(month);
+        this.setState({ dateContext: moment(this.state.dateContext).set('month', month) });
     }
     setYear = (event) => {
         let newYear = event.target.value;
         if (this.validateYearInput(newYear)) {
-            this.props.setYear(newYear);
+            this.setState({ dateContext: moment(this.state.dateContext).set('year', newYear) });
         }
     }
 
@@ -106,6 +107,11 @@ class Calendar extends Component {
             return true;
         }
         return false;
+    }
+
+    getDateByNumber = number => {
+        let date = moment(`${number}-${this.getMonth() + 1}-${this.getYear()}`, 'D/M/YYYY')._i;
+        return date;
     }
 
 
@@ -134,6 +140,7 @@ class Calendar extends Component {
         let rows = [];
         let cells = [];
         displayElems.map((day, index) => {
+
             if (index % 7 !== 0) {
                 cells.push(day);
             }
@@ -153,12 +160,11 @@ class Calendar extends Component {
                 cells = [];
             }
         })
+
         const { classes } = this.props;
         return (
             <Card>
                 <div>
-
-
                     <Table>
                         <TableHead>
                             <TableRow>
@@ -171,8 +177,9 @@ class Calendar extends Component {
                                     {row.map((day) =>
                                         (<TableCell className={classes.tableCell}>
                                             {day !== '' ? <CalendarDay
+                                                {...this.props}
                                                 day={day}
-                                                loggedHours={Math.floor(Math.random() * 10)}
+                                                date = {this.getDateByNumber(day)}
                                             /> : null}
 
                                         </TableCell>)

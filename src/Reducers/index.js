@@ -1,14 +1,11 @@
-import {combineReducers} from 'redux';
+import { combineReducers } from 'redux';
+import { reducer as formReducer } from 'redux-form';
+import LogsReducer from './LogsReducer';
 import UserReducer from './UserReducer';
-import DateReducer from './DateReducer';
-import moment from 'moment';
-
-export const initialState = {
-    dateContext: moment()
-}
 
 const rootReducer = combineReducers({
-    DateReducer,
+    form: formReducer,
+    logs: LogsReducer,
     user: UserReducer
 })
 
