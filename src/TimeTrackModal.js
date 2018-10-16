@@ -24,7 +24,9 @@ class TimeTrackModal extends Component {
         super(props);
         this.state = {
             date: this.props.date,
-            hours: this.props.hours
+            hours: this.props.hours,
+            inputHours: 1,
+            inputError: ''
         }
     }
 
@@ -64,6 +66,26 @@ class TimeTrackModal extends Component {
         }
     }
 
+    validateInputHours = (inputHours) => {
+        let inputError = '';
+        let hours = this.state.hours;
+        if(inputHours !== null && !isNaN(inputHours)){
+            if(hours + inputHours > 24 || hours + inputHours < 0){
+                inputError = "Total hours amount must be from 0 to 24";
+            }
+            if(inputHours === 0){
+                inputError = "Can't log 0 hours";
+            }
+        }
+        this.setState({inputError})
+    }
+
+    handleInputChange = e => {
+        let newValue = parseInt(e.target.value);
+        this.validateInputHours(newValue);
+        this.setState({inputHours: newValue});
+    }
+
     formatDate = (date) => {
         let dates = date.split('-');
         if(dates.length === 3){
@@ -97,37 +119,23 @@ class TimeTrackModal extends Component {
                     <CardContent>
 
                         <div >
-                            <FormControl style = {{position:'relative !important'}}>
-                                <InputLabel htmlFor="hours-simple">Add Hours</InputLabel>
+                            <InputLabel htmlFor ={`time-track-modal-${this.state.date}`}>{this.state.inputHours >= 0 ? <div>Add hours</div> : <div>Remove hours</div>}</InputLabel>
+                            <Input
+                            id = {`time-track-modal-${this.state.date}`}
+                            value = {this.state.inputHours}
+                            onChange = {e => {
+                                this.handleInputChange(e)
+                            }}
+                            type = {'number'}
+                            error = {this.state.inputError !== ''}
+                            >
+                            </Input>
+                            {this.state.inputError === '' ? null : <span style = {{color: 'red'}}>{this.state.inputError}</span>}
 
-                                <Select
-                                    value={this.state.hours}
-                                    onChange={this.handleChange}
-                                    input={
-                                        <Input id="hours-simple" />
-                                    }
-                                >
-                                    <MenuItem value={0}>
-                                        <em>None</em>
-                                    </MenuItem>
-                                    <MenuItem value={1}>One</MenuItem>
-                                    <MenuItem value={2}>Two</MenuItem>
-                                    <MenuItem value={3}>Three</MenuItem>
-                                    <MenuItem value={4}>Four</MenuItem>
-                                    <MenuItem value={5}>Five</MenuItem>
-                                    <MenuItem value={6}>Six</MenuItem>
-                                    <MenuItem value={7}>Seven</MenuItem>
-                                    <MenuItem value={8}>Eight</MenuItem>
-                                    <MenuItem value={9}>Nine</MenuItem>
-                                    <MenuItem value={10}>Ten</MenuItem>
-                                </Select>
-                            </FormControl>
                             <div>
                                 <Button onClick={this.handleSubmit}>Submit</Button>
                                 <Button onClick={this.props.onClose}>Close</Button>
-
                             </div>
-
                         </div>
                     </CardContent>
 

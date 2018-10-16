@@ -116,8 +116,6 @@ class Calendar extends Component {
 
 
     render() {
-        console.log('logs', this.props.logs)
-
         let weekdays = this.weekdaysShort.map((weekday) => (
             <TableCell>
                 {weekday}

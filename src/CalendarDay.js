@@ -75,6 +75,7 @@ class CalendarDay extends Component {
 
                         {this.state.showTrackModal ?
                             <TimeTrackModal
+                                hours = {this.state.hours}
                                 open={this.state.showTrackModal}
                                 onClose={this.closeTrackModal}
                                 {...this.props}

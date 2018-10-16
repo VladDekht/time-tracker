@@ -8,7 +8,6 @@ export const getLogs = () => {
     return dispatch => {
         if(sessionStorage.getItem('userEmail')){
             database.orderByChild('user').equalTo(sessionStorage.getItem('userEmail')).on('value', data => {
-                console.log('data', data.val())
                 dispatch({
                     type: GET_LOGS,
                     payload: data.val()
@@ -21,6 +20,7 @@ export const getLogs = () => {
 
 export const setLog = (log) => {
     log.user = sessionStorage.getItem('userEmail');
+    //database.orderByChild('date').equalTo(log.date).on('value', data => {database.ref('logs/' + data.key).remove()});
     return dispatch => database.push(log);
 }
 
