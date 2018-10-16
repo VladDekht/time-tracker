@@ -12,7 +12,7 @@ import TimeTrackModal from './TimeTrackModal';
 class CalendarDay extends Component {
     constructor(props) {
         super(props);
-        
+
         this.state = {
             day: this.props.day,
             date: this.props.date,
@@ -20,18 +20,21 @@ class CalendarDay extends Component {
             showAddButton: false,
             showTrackModal: false
         }
-        console.log(this.state.day)
     }
-    static getDerivedStateFromProps(props,state) {
-        let keys = Object.keys(props.logs);
-        let hours = 0;
-        for(let key of keys){
-            if (props.logs[key].date.localeCompare(props.date) === 0) {
-                hours = parseInt(props.logs[key].hours);
-                break;
+    static getDerivedStateFromProps(props, state) {
+        if (props.logs.length !== {}) {
+            let keys = Object.keys(props.logs);
+            let hours = 0;
+            for (let key of keys) {
+                if (props.logs) {
+                    if (props.logs[key].date.localeCompare(props.date) === 0) {
+                        hours = parseInt(props.logs[key].hours);
+                        break;
+                    }
+                }
             }
+            return ({ hours: hours })
         }
-        return ({hours: hours})
     }
     showAddButton = () => {
         this.setState({ showAddButton: true })
@@ -58,10 +61,12 @@ class CalendarDay extends Component {
             <Card
                 onMouseEnter={this.showAddButton}
                 onMouseLeave={this.hideAddButton}
-                style = {{boxShadow: 'none', 
-                backgroundColor: (this.state.hours > 0 ? (this.state.hours > 4 ? (this.state.hours > 8 ? '#F7E4E4' : '#f5f587') : '#DCF7D7') : '#E3E3E3')}}
+                style={{
+                    boxShadow: 'none',
+                    backgroundColor: (this.state.hours > 0 ? (this.state.hours > 4 ? (this.state.hours > 8 ? '#F7E4E4' : '#f5f587') : '#DCF7D7') : '#E3E3E3')
+                }}
             >
-                <CardActionArea onClick={this.openTrackModal} style ={{width: '100%', height : '100%'}}>
+                <CardActionArea onClick={this.openTrackModal} style={{ width: '100%', height: '100%' }}>
                     <CardHeader title={this.state.day} />
                     <CardContent>
                         <Typography>

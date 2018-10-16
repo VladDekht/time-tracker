@@ -116,6 +116,8 @@ class Calendar extends Component {
 
 
     render() {
+        console.log('logs', this.props.logs)
+
         let weekdays = this.weekdaysShort.map((weekday) => (
             <TableCell>
                 {weekday}
@@ -139,8 +141,7 @@ class Calendar extends Component {
         let displayElems = [].concat(...blanks, ...daysInMonth, ...endBlanks);
         let rows = [];
         let cells = [];
-        displayElems.map((day, index) => {
-
+         displayElems.map((day, index) => {
             if (index % 7 !== 0) {
                 cells.push(day);
             }
@@ -160,7 +161,6 @@ class Calendar extends Component {
                 cells = [];
             }
         })
-
         const { classes } = this.props;
         return (
             <Card>
@@ -175,14 +175,17 @@ class Calendar extends Component {
                             {rows.map((row) =>
                                 (<TableRow className={classes.tableRow}>
                                     {row.map((day) =>
-                                        (<TableCell className={classes.tableCell}>
+                                        {
+                                            return (<TableCell className={classes.tableCell}>
                                             {day !== '' ? <CalendarDay
+                                                key = {this.getDateByNumber(day) + this.getMonth() + this.getYear()}
                                                 {...this.props}
+                                                logs = {this.props.logs}
                                                 day={day}
                                                 date = {this.getDateByNumber(day)}
                                             /> : null}
 
-                                        </TableCell>)
+                                        </TableCell>)}
                                     )}
                                 </TableRow>))}
                         </TableBody>
@@ -205,7 +208,7 @@ class Calendar extends Component {
                                     onChange={(e) => this.setMonth(e)}
                                 >
                                     {this.monthsShort.map((month, index) =>
-                                        <MenuItem value={index}>{month}</MenuItem>
+                                        <MenuItem key = {month} value={index}>{month}</MenuItem>
                                     )}
                                 </Select>
                             </FormControl>

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import PostCard from './../Components/PostCard';
-import { Button, Input } from '@material-ui/core';
+import { Button, Input, InputLabel } from '@material-ui/core';
 import { register, getUser } from '../Actions/UserActions';
 import { connect } from "react-redux";
 
@@ -30,31 +30,40 @@ class CreateAccount extends Component {
                 title='CreateAccount'
                 body={
                     <div>
-                        <div>
+                        <div  style={{ paddingTop: '10px', paddingBottom: '10px' }}>
+                        <InputLabel htmlFor="register-email-input">Email:</InputLabel>
                             <Input
+                                id="register-email-input"
                                 type='email'
                                 value={this.state.email}
-                                placeholder={'Enter email'}
+                                //placeholder={'Enter email'}
                                 onChange={(event) => {
                                     this.setState({ email: event.target.value })
                                 }}
                             />
                         </div>
-                        <div>
+                        <div  style={{ paddingTop: '10px', paddingBottom: '10px' }}>
+                        <InputLabel htmlFor="register-password-input">Password:</InputLabel>
+
                             <Input
+                                id="register-password-input"
+
                                 type='password'
                                 value={this.state.password}
-                                placeholder={'Enter password'}
+                                //placeholder={'Enter password'}
                                 onChange={(event) => {
                                     this.setState({ password: event.target.value })
                                 }}
                             />
                         </div>
-                        <div>
+                        <div  style={{ paddingTop: '10px', paddingBottom: '10px' }}>
+                        <InputLabel htmlFor="register-confirm-password-input">Confirm Password:</InputLabel>
                             <Input
+                                id="register-confirm-password-input"
+
                                 type='password'
                                 value={this.state.confirmPassword}
-                                placeholder={'Repeat password'}
+                                //placeholder={'Repeat password'}
                                 onChange={(event) => {
                                     this.setState({ confirmPassword: event.target.value })
                                 }}
@@ -63,12 +72,10 @@ class CreateAccount extends Component {
                     </div>
 
                 }
-                footer={'Footer'}
-
-                actions={<div>
-
-                    <Button onClick={() => { this.props.history.push('/Login') }}>Sign In</Button>
+                actions={
+                <div>
                     <Button onClick = {this.register}>Register</Button>
+                    <Button onClick={() => { this.props.history.push('/Login') }}>Sign In</Button>
                 </div>}
             />
         );

@@ -22,7 +22,7 @@ export class App extends Component {
 
   render() {
     return (
-      <div >
+      <div style = {{heigth : '100%'}}>
         <ButtonAppBar {...this.props} />
         <Calendar
           {...this.props}

@@ -34,7 +34,7 @@ class ButtonAppBar extends React.Component {
 
   logout = () => {
     this.props.logout().then(() => {
-      localStorage.removeItem('userEmail');
+      sessionStorage.removeItem('userEmail');
       this.props.history.push('/login');
     });
   }
@@ -51,9 +51,9 @@ class ButtonAppBar extends React.Component {
             <Typography variant="title" color="inherit" className={classes.grow}>
               Calendar
             </Typography>
-            {localStorage.userEmail ?
+            {sessionStorage.getItem('userEmail') ?
               <div>
-                <Typography color ="inherit">{localStorage.getItem('userEmail')}</Typography>
+                <Typography color ="inherit">{sessionStorage.getItem('userEmail')}</Typography>
                 <Button color="inherit" onClick={this.logout}>Logout</Button>
               </div>
               : <Button color="inherit" onClick = {this.props.history.push('/login')}>Login</Button>}
