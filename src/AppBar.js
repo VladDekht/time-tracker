@@ -5,8 +5,7 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
-import MenuIcon from '@material-ui/icons/Menu';
+import { Menu, MenuItem, Fade } from '@material-ui/core/';
 import { logout } from './Actions/UserActions';
 import { connect } from "react-redux";
 import { compose } from 'redux';
@@ -29,8 +28,18 @@ const styles = {
 class ButtonAppBar extends React.Component {
   constructor(props) {
     super(props);
+    this.state = {
+      anchorEl: null,
+    };
   }
 
+  handleClick = event => {
+    this.setState({ anchorEl: event.currentTarget });
+  };
+
+  handleClose = () => {
+    this.setState({ anchorEl: null });
+  };
 
   logout = () => {
     this.props.logout().then(() => {
@@ -45,18 +54,32 @@ class ButtonAppBar extends React.Component {
       <div className={classes.root}>
         <AppBar position="static">
           <Toolbar>
-            <IconButton className={classes.menuButton} color="inherit" aria-label="Menu">
-              <MenuIcon />
-            </IconButton>
             <Typography variant="title" color="inherit" className={classes.grow}>
-              Calendar
+              Time Tracking
             </Typography>
             {sessionStorage.getItem('userEmail') ?
               <div>
-                <Typography color ="inherit">{sessionStorage.getItem('userEmail')}</Typography>
-                <Button color="inherit" onClick={this.logout}>Logout</Button>
+                <Button
+                  aria-owns={this.state.anchorEl ? 'logout-menu' : null}
+                  aria-haspopup="true"
+                  onClick={this.handleClick}
+                >
+                <p style = {{color: 'white'}}>{sessionStorage.getItem('userEmail')}</p>
+                </Button>
+                <Menu
+                  id="logout-menu"
+                  anchorEl={this.state.anchorEl}
+                  open={Boolean(this.state.anchorEl)}
+                  onClose={this.handleClose}
+                  TransitionComponent={Fade}
+                >
+                  <MenuItem onClick={() => {
+                    this.handleClose();
+                    this.logout();
+                  }}>Logout</MenuItem>
+                </Menu>
               </div>
-              : <Button color="inherit" onClick = {this.props.history.push('/login')}>Login</Button>}
+              : <Button color="inherit" onClick={this.props.history.push('/login')}>Login</Button>}
           </Toolbar>
         </AppBar>
       </div>

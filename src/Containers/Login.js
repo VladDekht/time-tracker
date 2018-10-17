@@ -12,19 +12,56 @@ class Login extends Component {
         super(props);
         this.state = {
             email: '',
-            password: ''
+            password: '',
+            inputErrors: [],
         }
     }
     componentWillMount() {
         this.props.getUser();
+        if(sessionStorage.getItem('userEmail')){
+            this.props.history.push('/');
+        }
+    }
+
+    validateEmail = (email) => {
+        let regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return regex.test(String(email).toLowerCase());
+    }
+
+    /*validatePassword = (password) => {
+        let regex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/
+        return regex.test(String(password).toLowerCase());
+    }*/
+
+    validateForm = () => {
+        let inputError = '';
+        let isValid = true;
+        if(!this.validateEmail(this.state.email)){
+            inputError = 'Please, enter a valid email';
+            isValid = false;
+        }
+        if(!isValid){
+            this.setState({inputErrors: [...this.state.inputErrors, inputError]});
+        }
+        return isValid;
+    }
+
+    handleLogin = () => {
+        if(this.validateForm()){
+            this.login();
+        }
     }
 
     login = () => {
         this.props.login(this.state.email, this.state.password).then(response => {
             sessionStorage.setItem('userEmail', response.user.email);
             this.props.history.replace('/');
-        }).catch(err => { console.log(err) })
+        }).catch(err => { 
+
+            this.setState({inputErrors:[...this.state.inputErrors, err.message] }) 
+        })
     }
+
     render() {
         return (
             <PostCard
@@ -38,9 +75,9 @@ class Login extends Component {
                                 id="login-email-input"
                                 type='email'
                                 value={this.state.email}
-                                //placeholder={'Enter email'}
+                                error = {this.state.inputErrors.length !== 0}
                                 onChange={(event) => {
-                                    this.setState({ email: event.target.value })
+                                    this.setState({ email: event.target.value, inputErrors: []})
                                 }}
                             />
                         </div>
@@ -51,19 +88,23 @@ class Login extends Component {
                                 id="login-password-input"
                                 type='password'
                                 value={this.state.password}
-                                //placeholder={'Enter password'}
+                                error = {this.state.inputErrors.length !== 0}
                                 onChange={(event) => {
-                                    this.setState({ password: event.target.value })
+                                    this.setState({ password: event.target.value, inputErrors: [] })
                                 }}
                             />
                         </div>
+                {this.state.inputError === '' ? null : <span style = {{color: 'red'}}>{this.state.inputErrors.map((error, index) => (
+                    <p key = {index}> {error}</p>
+                ))}</span>}
+
                     </div>
 
                 }
                 actions={
                     <div>
-                        <Button onClick={this.login}>Login</Button>
-                        <Button onClick={() => { this.props.history.push('/CreateAccount') }}>Create Account</Button>
+                        <Button onClick={this.handleLogin}>Login</Button>
+                        <Button onClick={() => { this.props.history.push('/register') }}>Create Account</Button>
                     </div>}
             />
         );

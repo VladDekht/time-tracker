@@ -22,6 +22,7 @@ import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import TextField from '@material-ui/core/TextField';
 import CardActions from '@material-ui/core/CardActions';
+import {CircularProgress} from '@material-ui/core'; 
 
 
 
@@ -44,8 +45,9 @@ const styles = theme => ({
         padding: '0 !important',
     },
     tableCell: {
-        padding: '0 !important',
+        padding: '0.5% !important',
     }
+
 });
 
 class Calendar extends Component {
@@ -58,12 +60,47 @@ class Calendar extends Component {
             showYearPopup: false
         }
     }
+    
+    componentWillUnmount(){
+        localStorage.removeItem('currentMonth');
+    }
 
     weekdays = moment.weekdays();
     weekdaysShort = moment.weekdaysShort();
     months = moment.months();
     monthsShort = moment.monthsShort();
 
+    monthNumToWord = (num) => {
+        if (typeof num === 'string') {
+            num = parseInt(num);
+        }
+        switch (num) {
+            case 1:
+                return "January";
+            case 2:
+                return "February";
+            case 3:
+                return "March";
+            case 4:
+                return "April";
+            case 5:
+                return "May";
+            case 6:
+                return "June";
+            case 7:
+                return "July";
+            case 8:
+                return "August";
+            case 9:
+                return "September";
+            case 10:
+                return "October";
+            case 11:
+                return "November";
+            case 12:
+                return "December";
+        }
+    }
     getYear = () => {
         return this.state.dateContext.format('YYYY');
     }
@@ -114,7 +151,6 @@ class Calendar extends Component {
         return date;
     }
 
-
     render() {
         let weekdays = this.weekdaysShort.map((weekday) => (
             <TableCell>
@@ -139,7 +175,7 @@ class Calendar extends Component {
         let displayElems = [].concat(...blanks, ...daysInMonth, ...endBlanks);
         let rows = [];
         let cells = [];
-         displayElems.map((day, index) => {
+        displayElems.map((day, index) => {
             if (index % 7 !== 0) {
                 cells.push(day);
             }
@@ -160,7 +196,7 @@ class Calendar extends Component {
             }
         })
         const { classes } = this.props;
-        return (
+        return (Object.keys(this.props.logs).length > 0 ?
             <Card>
                 <div>
                     <Table>
@@ -172,26 +208,26 @@ class Calendar extends Component {
                         <TableBody>
                             {rows.map((row) =>
                                 (<TableRow className={classes.tableRow}>
-                                    {row.map((day) =>
-                                        {
-                                            return (<TableCell className={classes.tableCell}>
+                                    {row.map((day) => {
+                                        return (<TableCell className={classes.tableCell}>
                                             {day !== '' ? <CalendarDay
-                                                key = {this.getDateByNumber(day) + this.getMonth() + this.getYear()}
+                                                key={this.getDateByNumber(day) + this.getMonth() + this.getYear()}
                                                 {...this.props}
-                                                logs = {this.props.logs}
+                                                logs={this.props.logs}
                                                 day={day}
-                                                date = {this.getDateByNumber(day)}
+                                                date={this.getDateByNumber(day)}
                                             /> : null}
 
-                                        </TableCell>)}
+                                        </TableCell>)
+                                    }
                                     )}
                                 </TableRow>))}
                         </TableBody>
                     </Table>
                 </div>
                 <CardActions>
-                    <div>
-                        <div>
+                    <div style = {{overflow: 'hidden'}}>
+                        <div style = {{float: 'left', paddingRight: '1%'}}>
                             <FormControl className={classes.formControl} >
                                 <InputLabel htmlFor="month-select">Month</InputLabel>
                                 <Select
@@ -206,25 +242,33 @@ class Calendar extends Component {
                                     onChange={(e) => this.setMonth(e)}
                                 >
                                     {this.monthsShort.map((month, index) =>
-                                        <MenuItem key = {month} value={index}>{month}</MenuItem>
+                                        <MenuItem key={month} value={index}>{month}</MenuItem>
                                     )}
                                 </Select>
                             </FormControl>
                         </div>
-                        <div>
-                            <Input
-                                defaultValue={this.getYear()}
-                                //className={classes.input}
-                                inputType='number'
-                                disableUnderline
-                                onChange={e => { this.setYear(e) }}
-                            />
+                        <div style = {{overflow: 'hidden'}}>
+                            <FormControl className={classes.formControl}>
+                                <InputLabel htmlFor="year-input">Year</InputLabel>
+
+                                <Input
+                                    defaultValue={this.getYear()}
+                                    //className={classes.input}
+                                    inputType='number'
+                                    disableUnderline
+                                    onChange={e => { this.setYear(e) }}
+                                    inputProps={{
+                                        id: 'year-input'
+                                    }}
+                                />
+                            </FormControl>
+
                         </div>
 
                     </div>
 
                 </CardActions>
-            </Card>
+            </Card> : <div style = {{margin: 'auto', width: '10%', paddingTop: '20%'}}><CircularProgress thickness = {5}/></div>
         );
     }
 }

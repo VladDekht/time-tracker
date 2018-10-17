@@ -12,7 +12,73 @@ class CreateAccount extends Component {
         this.state = {
             email: '',
             password: '',
-            confirmPassword: ''
+            confirmPassword: '',
+            inputErrors: []
+        }
+    }
+
+    componentWillMount(){
+        if(sessionStorage.getItem('userEmail')){
+            this.props.history.push('/');
+        }
+    }
+
+    handleChange = (event) => {
+        let value = event.target.value;
+        switch(event.target.id){
+            case 'register-email-input':
+                this.setState({email: value, inputErrors : []});
+                break;
+            case 'register-password-input':
+                this.setState({password: value, inputErrors : []});
+                break;
+            case 'register-confirm-password-input':
+                this.setState({confirmPassword: value, inputErrors : []});
+                break;    
+        }
+    }
+
+    validateEmail = (email) => {
+        let regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return regex.test(String(email).toLowerCase());
+    }
+
+    validatePassword = (password) => {
+        let regex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/
+        return regex.test(String(password).toLowerCase());
+    }
+
+    validatePwdConfirm = (pwd,confPwd) => {
+        if(String(pwd).localeCompare(String(confPwd)) !== 0){
+            return false;
+        }
+        return true;
+    }
+
+    validateForm = () => {
+        let emailError = '';
+        let passwordError = '';
+        let confirmPwdError = '';
+        let isValid = true;
+        if(!this.validateEmail(this.state.email)){
+            emailError = 'Please, enter a valid email';
+            isValid = false;
+        }
+        if(!this.validatePassword(this.state.password)){
+            passwordError = 'Password must contain atleast 8 characters, 1 letter and 1 digit ';
+            isValid = false;
+        }
+        if(!this.validatePwdConfirm(this.state.password,this.state.confirmPassword)){
+            confirmPwdError = "Password and confirm password don't match";
+            isValid = false;
+        }
+        this.setState({inputErrors: [...this.state.inputErrors, emailError, passwordError, confirmPwdError]});
+        return isValid;
+    }
+
+    handleRegister = () => {
+        if(this.validateForm()){
+            this.register();
         }
     }
 
@@ -20,8 +86,7 @@ class CreateAccount extends Component {
         this.props.register(this.state.email, this.state.password).then((response) => {
             localStorage.setItem('userEmail', response.user.email)
             this.props.history.replace('/');
-        }).catch(err => {console.log(err)});
-        
+        }).catch(err => {this.setState({inputErrors: [...this.state.inputErrors, err.message]})});
     }
 
     render() {
@@ -36,10 +101,8 @@ class CreateAccount extends Component {
                                 id="register-email-input"
                                 type='email'
                                 value={this.state.email}
-                                //placeholder={'Enter email'}
-                                onChange={(event) => {
-                                    this.setState({ email: event.target.value })
-                                }}
+                                error = {this.state.inputErrors.length !== 0}
+                                onChange={this.handleChange}
                             />
                         </div>
                         <div  style={{ paddingTop: '10px', paddingBottom: '10px' }}>
@@ -50,10 +113,8 @@ class CreateAccount extends Component {
 
                                 type='password'
                                 value={this.state.password}
-                                //placeholder={'Enter password'}
-                                onChange={(event) => {
-                                    this.setState({ password: event.target.value })
-                                }}
+                                error = {this.state.inputErrors.length !== 0}
+                                onChange={this.handleChange}
                             />
                         </div>
                         <div  style={{ paddingTop: '10px', paddingBottom: '10px' }}>
@@ -63,18 +124,19 @@ class CreateAccount extends Component {
 
                                 type='password'
                                 value={this.state.confirmPassword}
-                                //placeholder={'Repeat password'}
-                                onChange={(event) => {
-                                    this.setState({ confirmPassword: event.target.value })
-                                }}
+                                error = {this.state.inputErrors.length !== 0}
+                                onChange={this.handleChange}
                             />
                         </div>
+                        {this.state.inputError === '' ? null : <span style = {{color: 'red'}}>{this.state.inputErrors.map((error, index) => (
+                    <p key = {index}> {error}</p>
+                ))}</span>}
                     </div>
 
                 }
                 actions={
                 <div>
-                    <Button onClick = {this.register}>Register</Button>
+                    <Button onClick = {this.handleRegister}>Create Account</Button>
                     <Button onClick={() => { this.props.history.push('/Login') }}>Sign In</Button>
                 </div>}
             />

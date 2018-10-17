@@ -26,12 +26,9 @@ class TimeTrackModal extends Component {
             date: this.props.date,
             hours: this.props.hours,
             inputHours: 1,
-            inputError: ''
+            inputError: '',
+            isValid: true
         }
-    }
-
-    handleChange = event => {
-        this.setState({ hours: event.target.value })
     }
 
     monthNumToWord = (num) => {
@@ -69,21 +66,25 @@ class TimeTrackModal extends Component {
     validateInputHours = (inputHours) => {
         let inputError = '';
         let hours = this.state.hours;
+        let isValid = true;
         if(inputHours !== null && !isNaN(inputHours)){
             if(hours + inputHours > 24 || hours + inputHours < 0){
                 inputError = "Total hours amount must be from 0 to 24";
+                isValid = false;
             }
             if(inputHours === 0){
                 inputError = "Can't log 0 hours";
             }
         }
-        this.setState({inputError})
+        this.setState({inputError, isValid});
+        return isValid;
     }
 
     handleInputChange = e => {
         let newValue = parseInt(e.target.value);
-        this.validateInputHours(newValue);
-        this.setState({inputHours: newValue});
+        if(this.validateInputHours(newValue)){
+            this.setState({inputHours: newValue});
+        }
     }
 
     formatDate = (date) => {
@@ -95,7 +96,7 @@ class TimeTrackModal extends Component {
     }
 
     handleSubmit = () => {
-        this.props.setLog({ date: this.state.date, hours: this.state.hours, user: localStorage.getItem('user') });
+        this.props.setLog({ date: this.state.date, hours: this.state.inputHours + this.state.hours, user: localStorage.getItem('user') });
         this.props.onClose();
     }
 
@@ -117,7 +118,7 @@ class TimeTrackModal extends Component {
                     title={this.formatDate(this.state.date)}>
                     </CardHeader>
                     <CardContent>
-
+                        <p>Logged hours: {this.state.hours}</p>
                         <div >
                             <InputLabel htmlFor ={`time-track-modal-${this.state.date}`}>{this.state.inputHours >= 0 ? <div>Add hours</div> : <div>Remove hours</div>}</InputLabel>
                             <Input
@@ -130,10 +131,11 @@ class TimeTrackModal extends Component {
                             error = {this.state.inputError !== ''}
                             >
                             </Input>
-                            {this.state.inputError === '' ? null : <span style = {{color: 'red'}}>{this.state.inputError}</span>}
-
                             <div>
-                                <Button onClick={this.handleSubmit}>Submit</Button>
+                            {this.state.inputError === '' ? null : <span style = {{color: 'red'}}>{this.state.inputError}</span>}
+                            </div>
+                            <div>
+                                <Button disabled = {!this.state.isValid || this.state.inputHours === 0}onClick={this.handleSubmit}>Submit</Button>
                                 <Button onClick={this.props.onClose}>Close</Button>
                             </div>
                         </div>

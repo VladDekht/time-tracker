@@ -34,14 +34,13 @@ export class App extends Component {
 
 const mapStateToProps = state => ({
   logs: state.logs,
-  user: state.user
+  user: state.user,
 })
 
 const mapDispatchToProps = dispatch => ({
   getLogs: () => dispatch(getLogs()),
   setLog: log => dispatch(setLog(log)),
   getUser: () => dispatch(getUser()),
-  //login: (email,password) => dispatch(login(email,password))
 })
 
 export default connect(mapStateToProps,mapDispatchToProps)(App);

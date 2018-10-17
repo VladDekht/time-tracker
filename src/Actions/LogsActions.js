@@ -20,7 +20,7 @@ export const getLogs = () => {
 
 export const setLog = (log) => {
     log.user = sessionStorage.getItem('userEmail');
-    //database.orderByChild('date').equalTo(log.date).on('value', data => {database.ref('logs/' + data.key).remove()});
+    //.update({hours: log.hours});
     return dispatch => database.push(log);
 }
 
