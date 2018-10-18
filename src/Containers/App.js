@@ -1,12 +1,9 @@
 import React, { Component } from "react";
-import Button from '@material-ui/core/Button';
-import "./App.css";
 import Calendar from "./Calendar";
-import ButtonAppBar from "./AppBar";
+import ButtonAppBar from "../AppBar";
 import { connect } from "react-redux";
-import { getLogs, getLog, setLog } from './Actions/LogsActions';
-import {getUser} from './Actions/UserActions';
-import { Field, reduxForm, reset } from 'redux-form';
+import { getLogs, setLog } from '../Actions/LogsActions';
+import {getUser} from '../Actions/UserActions';
 
 export class App extends Component {
   constructor(props) {
@@ -22,7 +19,7 @@ export class App extends Component {
 
   render() {
     return (
-      <div style = {{heigth : '100%'}}>
+      <div >
         <ButtonAppBar {...this.props} />
         <Calendar
           {...this.props}

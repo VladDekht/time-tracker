@@ -7,7 +7,7 @@ import CardActionArea from '@material-ui/core/CardActionArea';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import AddIcon from '@material-ui/icons/Add';
-import TimeTrackModal from './TimeTrackModal';
+import TimeTrackModal from '../Components/TimeTrackModal';
 import {withStyles} from '@material-ui/core';
 
 const styles = theme => ({

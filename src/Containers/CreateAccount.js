@@ -1,6 +1,4 @@
 import React, { Component } from 'react';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
 import PostCard from './../Components/PostCard';
 import { Button, Input, InputLabel } from '@material-ui/core';
 import { register, getUser } from '../Actions/UserActions';

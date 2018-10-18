@@ -1,9 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import form from './App';
+import form from './Containers/App';
 import * as serviceWorker from './serviceWorker';
-import { Provider, connect } from 'react-redux';
+import { Provider } from 'react-redux';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import Login from './Containers/Login';
 import CreateAccount from './Containers/CreateAccount';
