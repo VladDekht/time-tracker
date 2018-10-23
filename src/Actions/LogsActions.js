@@ -1,4 +1,4 @@
-import { database} from '../Firebase';
+import { database} from '../firebase';
 import * as firebase from "firebase";
 
 export const GET_LOGS = 'GET_LOGS';

@@ -1,4 +1,4 @@
-import { auth } from './../Firebase';
+import { auth } from './../firebase';
 export const GET_USER = 'GET_USER';
 
 export function getUser() {

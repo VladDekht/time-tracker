@@ -1,6 +1,6 @@
-import React, { Component } from "react";
-import { withStyles } from "@material-ui/core/styles";
-import moment, { monthsShort } from "moment";
+import React, { Component } from 'react';
+import { withStyles } from '@material-ui/core/styles';
+import moment, { monthsShort } from 'moment';
 import {
   Card,
   Table,
@@ -15,8 +15,9 @@ import {
   MenuItem,
   CardActions,
   CircularProgress
-} from "@material-ui/core";
+} from '@material-ui/core';
 import CalendarDay from './CalendarDay';
+import { validateYear } from './../validators/validators';
 
 const styles = theme => ({
   root: {
@@ -34,10 +35,23 @@ const styles = theme => ({
     fontSize: 14
   },
   tableRow: {
-    padding: "0 !important"
+    padding: '0'
   },
   tableCell: {
-    padding: "0.5% !important"
+    padding: '0.5%'
+  },
+
+  circularProgressContainer: {
+    margin: 'auto',
+    width: '10%',
+    paddingTop: '20%'
+  },
+  hiddenOverflow: {
+    overflow: 'hidden'
+  },
+  formControlContainer: {
+    float: 'left',
+    paddingRight: '1%'
   }
 });
 
@@ -52,48 +66,13 @@ class Calendar extends Component {
     };
   }
 
-  componentWillUnmount() {
-    localStorage.removeItem("currentMonth");
-  }
-
   weekdays = moment.weekdays();
   weekdaysShort = moment.weekdaysShort();
   months = moment.months();
   monthsShort = moment.monthsShort();
 
-  monthNumToWord = num => {
-    if (typeof num === "string") {
-      num = parseInt(num);
-    }
-    switch (num) {
-      case 1:
-        return "January";
-      case 2:
-        return "February";
-      case 3:
-        return "March";
-      case 4:
-        return "April";
-      case 5:
-        return "May";
-      case 6:
-        return "June";
-      case 7:
-        return "July";
-      case 8:
-        return "August";
-      case 9:
-        return "September";
-      case 10:
-        return "October";
-      case 11:
-        return "November";
-      case 12:
-        return "December";
-    }
-  };
   getYear = () => {
-    return this.state.dateContext.format("YYYY");
+    return this.state.dateContext.format('YYYY');
   };
   getMonth = () => {
     return this.state.dateContext.month();
@@ -102,79 +81,83 @@ class Calendar extends Component {
     return this.state.dateContext.daysInMonth();
   };
   getCurrentDate = () => {
-    return this.state.dateContext.get("date");
+    return this.state.dateContext.get('date');
   };
   getCurrentDay = () => {
-    return this.state.dateContext.format("DD");
+    return this.state.dateContext.format('DD');
   };
 
   getFirstDayOfMonth = () => {
     let dateContext = this.state.dateContext;
     let firstDay = moment(dateContext)
-      .startOf("month")
-      .format("d");
+      .startOf('month')
+      .format('d');
     return firstDay;
   };
   getLastDayOfMonth = () => {
     let dateContext = this.state.dateContext;
     let lastDay = moment(dateContext)
-      .endOf("month")
-      .format("d");
+      .endOf('month')
+      .format('d');
     return lastDay;
   };
   setMonth = event => {
     let month = event.target.value;
     this.setState({
-      dateContext: moment(this.state.dateContext).set("month", month)
+      dateContext: moment(this.state.dateContext).set('month', month)
     });
   };
   setYear = event => {
     let newYear = event.target.value;
-    if (this.validateYearInput(newYear)) {
+    if (validateYear(newYear)) {
       this.setState({
-        dateContext: moment(this.state.dateContext).set("year", newYear)
+        dateContext: moment(this.state.dateContext).set('year', newYear)
       });
     }
   };
 
-  validateYearInput = year => {
-    var regex = /(19[0-9][0-9]|20[0-3][0-9])/;
-    if (regex.test(year)) {
-      return true;
-    }
-    return false;
-  };
+  
 
-  getDateByNumber = number => {
-    let date = moment(
-      `${number}-${this.getMonth() + 1}-${this.getYear()}`,
-      "D/M/YYYY"
-    )._i;
-    return date;
-  };
+  mapCalendarRow = (row, classes) => {
+    return row.map(day => (
+      <TableCell className={classes.tableCell}>
+        {day !== '' ? (
+          <CalendarDay
+            key={
+              this.getDateByNumber(day) +
+              this.getMonth() +
+              this.getYear()
+            }
+            {...this.props}
+            logs={this.props.logs}
+            day={day}
+            date={this.getDateByNumber(day)}
+          />
+        ) : null}
+      </TableCell>
+    ))
+  }
 
-  render() {
-    let weekdays = this.weekdaysShort.map(weekday => (
-      <TableCell>{weekday}</TableCell>
-    ));
+  mapCalendarRows = (rows, classes) => {
+    return rows.map((row, index) => (
+      <TableRow className={classes.tableRow} key = {`calendar-row-${index}`}>
+        {this.mapCalendarRow(row, classes)}
+      </TableRow>
+    ))
+  }
 
-    let blanks = [];
-    for (let i = 0; i < this.getFirstDayOfMonth(); i++) {
-      blanks.push("");
-    }
-    let endBlanks = [];
-    for (let i = 6; i > this.getLastDayOfMonth(); i--) {
-      endBlanks.push("");
-    }
-    let daysInMonth = [];
-    for (let i = 0; i < this.getDaysInMonth(); i++) {
-      daysInMonth.push(i + 1);
-    }
+  mapMenuItems = (items) => {
+    return items.map((item, index) => (
+        <MenuItem key={item} value={index}>
+          {item}
+        </MenuItem>
+        ))
+  }
 
-    let displayElems = [].concat(...blanks, ...daysInMonth, ...endBlanks);
+  mapDisplayElemsIntoRows = (displayElems) => {
     let rows = [];
     let cells = [];
-    displayElems.map((day, index) => {
+    displayElems.forEach((day, index) => {
       if (index % 7 !== 0) {
         cells.push(day);
       } else {
@@ -193,91 +176,94 @@ class Calendar extends Component {
         cells = [];
       }
     });
+
+    return rows
+  }
+
+  mapStringArrayIntoTableCells = (stringArray) => {
+    return stringArray.map((string, index) => (
+      <TableCell key = {`table-item-${string}-${index}`}>{string}</TableCell>
+    ))
+  }
+
+  getDateByNumber = number => {
+    let date = moment(
+      `${number}-${this.getMonth() + 1}-${this.getYear()}`,
+      'D/M/YYYY'
+    )._i;
+    return date;
+  };
+
+  render() {
+    let lastDaysOfPrevMonth = [];
+    for (let i = 0; i < this.getFirstDayOfMonth(); i++) {
+      lastDaysOfPrevMonth.push('');
+    }
+    let firstDaysOfNextMonth = [];
+    for (let i = 6; i > this.getLastDayOfMonth(); i--) {
+      firstDaysOfNextMonth.push('');
+    }
+    let daysInMonth = [];
+    for (let i = 0; i < this.getDaysInMonth(); i++) {
+      daysInMonth.push(i + 1);
+    }
+
+    let displayElems = [].concat(...lastDaysOfPrevMonth, ...daysInMonth, ...firstDaysOfNextMonth);
+    let rows = this.mapDisplayElemsIntoRows(displayElems);
     const { classes } = this.props;
     return this.props.logs &&
       (Object.keys(this.props.logs).length > 0 || this.props.logs === -1) ? (
-      <Card>
-        <div>
-          <Table>
-            <TableHead>
-              <TableRow>{weekdays}</TableRow>
-            </TableHead>
-            <TableBody>
-              {rows.map(row => (
-                <TableRow className={classes.tableRow}>
-                  {row.map(day => {
-                    return (
-                      <TableCell className={classes.tableCell}>
-                        {day !== "" ? (
-                          <CalendarDay
-                            key={
-                              this.getDateByNumber(day) +
-                              this.getMonth() +
-                              this.getYear()
-                            }
-                            {...this.props}
-                            logs={this.props.logs}
-                            day={day}
-                            date={this.getDateByNumber(day)}
-                          />
-                        ) : null}
-                      </TableCell>
-                    );
-                  })}
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-        <CardActions>
-          <div style={{ overflow: "hidden" }}>
-            <div style={{ float: "left", paddingRight: "1%" }}>
-              <FormControl className={classes.formControl}>
-                <InputLabel htmlFor="month-select">Month</InputLabel>
-                <Select
-                  value={this.getMonth()}
-                  onChange={this.handleChange}
-                  inputProps={{
-                    name: "month",
-                    id: "month-select"
-                  }}
-                  disableUnderline
-                  onChange={e => this.setMonth(e)}
-                >
-                  {this.monthsShort.map((month, index) => (
-                    <MenuItem key={month} value={index}>
-                      {month}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </div>
-            <div style={{ overflow: "hidden" }}>
-              <FormControl className={classes.formControl}>
-                <InputLabel htmlFor="year-input">Year</InputLabel>
-
-                <Input
-                  defaultValue={this.getYear()}
-                  //className={classes.input}
-                  inputType="number"
-                  disableUnderline
-                  onChange={e => {
-                    this.setYear(e);
-                  }}
-                  inputProps={{
-                    id: "year-input"
-                  }}
-                />
-              </FormControl>
-            </div>
+        <Card>
+          <div>
+            <Table>
+              <TableHead>
+                <TableRow>{this.mapStringArrayIntoTableCells(this.weekdaysShort)}</TableRow>
+              </TableHead>
+              <TableBody>
+                {this.mapCalendarRows(rows, classes)}
+              </TableBody>
+            </Table>
           </div>
-        </CardActions>
-      </Card>
-    ) : (
-      <div style={{ margin: "auto", width: "10%", paddingTop: "20%" }}>
-        <CircularProgress thickness={5} />
-      </div>
-    );
+          <CardActions>
+            <div className={classes.hiddenOverflow}>
+              <div className={classes.formControlContainer}>
+                <FormControl className={classes.formControl}>
+                  <InputLabel htmlFor='month-select'>Month</InputLabel>
+                  <Select
+                    onChange={this.setMonth}
+                    value={this.getMonth()}
+                    inputProps={{
+                      name: 'month',
+                      id: 'month-select'
+                    }}
+                    disableUnderline
+                  >
+                    {this.mapMenuItems(this.monthsShort)}
+                  </Select>
+                </FormControl>
+              </div>
+              <div className={classes.hiddenOverflow}>
+                <FormControl className={classes.formControl}>
+                  <InputLabel htmlFor='year-input'>Year</InputLabel>
+                  <Input
+                    defaultValue={this.getYear()}
+                    inputType='number'
+                    disableUnderline
+                    onChange={this.setYear}
+                    inputProps={{
+                      id: 'year-input'
+                    }}
+                  />
+                </FormControl>
+              </div>
+            </div>
+          </CardActions>
+        </Card>
+      ) : (
+        <div className={classes.circularProgressContainer}>
+          <CircularProgress thickness={5} />
+        </div>
+      );
   }
 }
 
