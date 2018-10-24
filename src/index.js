@@ -10,7 +10,7 @@ import CreateAccount from './Containers/CreateAccount';
 import { applyMiddleware, createStore } from 'redux';
 import thunk from 'redux-thunk';
 import reducers from './Reducers/index';
-import { PageNotFound } from './Containers/PageNotFound';
+import PageNotFound from './Containers/PageNotFound';
 import { Online, Offline } from 'react-detect-offline';
 import { Button } from '@material-ui/core';
 
@@ -34,9 +34,7 @@ ReactDOM.render(
         <Offline>
             <div>
                 <div style={{ marginLeft: '42%' }}>
-                    <h1>
-                        No internet connection
-                    </h1>
+                    <h1>No internet connection</h1>
                     <Button onClick={() => window.location.reload()}>
                         <h3>
                             Try again

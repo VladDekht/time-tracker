@@ -4,7 +4,7 @@ import CardContent from '@material-ui/core/CardContent';
 import CardHeader from '@material-ui/core/CardHeader';
 import { CardActions, withStyles } from '@material-ui/core';
 
-const styles = theme => ({
+const styles = () => ({
     displayTableCell: {
         display: 'tableCell',
     },

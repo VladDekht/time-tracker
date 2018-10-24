@@ -8,10 +8,10 @@ export const hexToRgb = (hex) => {
 }
 
 export const whiteOrBlackFont = (backroundColorRGB) => {
-	return (
-		backroundColorRGB.r * 0.299 + 
-		backroundColorRGB.g * 0.587 + 
-		backroundColorRGB.b * 0.114
-		) 
-		> 186 ? '#000000' : '#ffffff';
+    return (
+        backroundColorRGB.r * 0.299 +
+        backroundColorRGB.g * 0.587 +
+        backroundColorRGB.b * 0.114
+    )
+        > 186 ? '#000000' : '#ffffff';
 }

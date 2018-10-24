@@ -56,7 +56,7 @@ class TimeTrackModal extends Component {
     formatDate = (date) => {
         let dates = date.split('-');
         if (dates.length === 3) {
-            return `${dates[0]} of ${this.monthNumToWord(dates[1])} ${dates[2]}`
+            return `${dates[0]} of ${this.monthNumToWord(dates[1])} ${dates[2]}`;
         }
         return date;
     }
@@ -65,13 +65,13 @@ class TimeTrackModal extends Component {
         this.props.setLog({ 
             date: this.state.date, 
             hours: this.state.inputHours + this.state.hours, 
-            user: localStorage.getItem('user') 
+            user: localStorage.getItem('user'),
         });
         this.props.onClose();
     }
 
     render() {
-        const {inputError} = this.state; 
+        const {inputError} = this.state;
         const {classes} = this.props;
         return (
             <Modal

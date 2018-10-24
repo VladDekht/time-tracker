@@ -1,12 +1,20 @@
 /* eslint-disable indent */
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Button, Input, InputLabel } from '@material-ui/core';
+import { compose } from 'redux';
+import { Button, Input, InputLabel, withStyles } from '@material-ui/core';
 import _ from 'lodash';
 import PostCard from '../Components/PostCard';
 import { login, getUser } from '../Actions/userActions';
 import { validateEmail } from '../validators/validators';
 
+
+const styles = theme => ({
+    inputContainer: {
+        paddingTop: '10px',
+        paddingBottom: '10px',
+    },
+});
 
 class Login extends Component {
     constructor(props) {
@@ -53,13 +61,13 @@ class Login extends Component {
     }
 
     render() {
+        const { classes } = this.props;
         return (
             <PostCard
-
                 title='Login'
                 body={
                     <div>
-                        <div style={{ paddingTop: '10px', paddingBottom: '10px' }}>
+                        <div className={classes.inputContainer}>
                             <InputLabel htmlFor='login-email-input'>Email:</InputLabel>
                             <Input
                                 id='login-email-input'
@@ -71,7 +79,7 @@ class Login extends Component {
                                 }}
                             />
                         </div>
-                        <div style={{ paddingTop: '10px', paddingBottom: '10px' }}>
+                        <div className={classes.inputContainer}>
                             <InputLabel htmlFor='login-password-input'>Password:</InputLabel>
 
                             <Input
@@ -110,4 +118,4 @@ const mapDispatchToProps = dispatch => ({
     login: (email, password) => dispatch(login(email, password)),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Login);
+export default compose(withStyles(styles), connect(mapStateToProps, mapDispatchToProps))(Login);

@@ -1,9 +1,18 @@
 import React, { Component } from 'react';
-import { Button, Input, InputLabel } from '@material-ui/core';
+import { Button, Input, InputLabel, withStyles } from '@material-ui/core';
+import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { register, getUser } from '../Actions/userActions';
 import PostCard from '../Components/PostCard';
 import { validateEmail, validatePassword, validatePwdConfirm } from '../validators/validators';
+
+
+const styles = theme => ({
+	inputContainer: {
+		paddingTop: '10px',
+		paddingBottom: '10px',
+	}
+})
 
 class CreateAccount extends Component {
 	constructor(props) {
@@ -65,21 +74,22 @@ class CreateAccount extends Component {
 
 	register = () => {
 		this.props.register(this.state.email, this.state.password).then((response) => {
-			if(response.user){
+			if (response.user) {
 				this.props.history.replace('/');
 			}
-		}).catch(err => 
-			{ this.setState({ inputErrors: [...this.state.inputErrors, err.message] }) 
+		}).catch(err => {
+			this.setState({ inputErrors: [...this.state.inputErrors, err.message] })
 		});
 	}
 
 	render() {
+		const { classes } = this.props;
 		return (
 			<PostCard
 				title='CreateAccount'
 				body={
 					<div>
-						<div style={{ paddingTop: '10px', paddingBottom: '10px' }}>
+						<div className={classes.inputContainer}>
 							<InputLabel htmlFor="register-email-input">Email:</InputLabel>
 							<Input
 								id="register-email-input"
@@ -89,23 +99,21 @@ class CreateAccount extends Component {
 								onChange={this.handleEmailInput}
 							/>
 						</div>
-						<div style={{ paddingTop: '10px', paddingBottom: '10px' }}>
+						<div className={classes.inputContainer}>
 							<InputLabel htmlFor="register-password-input">Password:</InputLabel>
 
 							<Input
 								id="register-password-input"
-
 								type='password'
 								value={this.state.password}
 								error={this.state.inputErrors.length !== 0}
 								onChange={this.handlePasswordInput}
 							/>
 						</div>
-						<div style={{ paddingTop: '10px', paddingBottom: '10px' }}>
+						<div className={classes.inputContainer}>
 							<InputLabel htmlFor="register-confirm-password-input">Confirm Password:</InputLabel>
 							<Input
 								id="register-confirm-password-input"
-
 								type='password'
 								value={this.state.confirmPassword}
 								error={this.state.inputErrors.length !== 0}
@@ -116,7 +124,6 @@ class CreateAccount extends Component {
 							<p key={index}> {error}</p>
 						))}</span>}
 					</div>
-
 				}
 				actions={
 					<div>
@@ -128,4 +135,4 @@ class CreateAccount extends Component {
 	}
 }
 
-export default connect(null, { register, getUser })(CreateAccount);
+export default compose(withStyles(styles), connect(null, { register, getUser }))(CreateAccount);

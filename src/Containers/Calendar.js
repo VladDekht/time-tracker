@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { withStyles } from '@material-ui/core/styles';
-import moment, { monthsShort } from 'moment';
+import moment from 'moment';
 import {
   Card,
   Table,
@@ -14,64 +14,58 @@ import {
   Select,
   MenuItem,
   CardActions,
-  CircularProgress
+  CircularProgress,
 } from '@material-ui/core';
 import CalendarDay from './CalendarDay';
-import { validateYear } from './../validators/validators';
-import {
-  ZERO_HOURS_COLOR,
-  ONE_FOUR_HOURS_COLOR,
-  FIVE_EIGHT_HOURS_COLOR,
-  NINE_PLUS_HOURS_COLOR
-} from '../constants/colorConstants';
+import { validateYear } from '../validators/validators';
 
 const styles = theme => ({
   root: {
-    flexGrow: 1
+    flexGrow: 1,
   },
   paper: {
     height: 140,
-    width: 100
+    width: 100,
   },
   control: {
-    padding: theme.spacing.unit * 2
+    padding: theme.spacing.unit * 2,
   },
   title: {
     marginBottom: 16,
-    fontSize: 14
+    fontSize: 14,
   },
   tableRow: {
-    padding: '0'
+    padding: '0',
   },
   tableCell: {
-    padding: '0.5%'
+    padding: '0.5%',
   },
   redTitle: {
-    color: 'red'
+    color: 'red',
   },
   calendarDayCard: {
     boxShadow: '1px',
   },
   fullWidthAndHeight: {
     width: '100%',
-    height: '100%'
+    height: '100%',
   },
   dayNumber: {
     paddingLeft: '24px',
-    fontSize: '1.5em'
+    fontSize: '1.5em',
   },
   circularProgressContainer: {
     margin: 'auto',
     width: '10%',
-    paddingTop: '20%'
+    paddingTop: '20%',
   },
   hiddenOverflow: {
-    overflow: 'hidden'
+    overflow: 'hidden',
   },
   formControlContainer: {
     float: 'left',
-    paddingRight: '1%'
-  }
+    paddingRight: '1%',
+  },
 });
 
 class Calendar extends Component {
@@ -134,8 +128,6 @@ class Calendar extends Component {
     }
   };
 
-
-
   mapCalendarRow = (row, classes) => (
     row.map((day, index) => (
       <TableCell className={classes.tableCell} key={`calendar-row-${index}`}>
@@ -154,14 +146,13 @@ class Calendar extends Component {
         ) : null}
       </TableCell>
     )))
-  
 
   mapCalendarRows = (rows, classes) => {
     return rows.map((row, index) => (
       <TableRow className={classes.tableRow} key={`calendar-row-${index}`}>
         {this.mapCalendarRow(row, classes)}
       </TableRow>
-    ))
+    ));
   }
 
   mapMenuItems = (items) => {
@@ -205,7 +196,7 @@ class Calendar extends Component {
   }
 
   getDateByNumber = (number) => {
-    let date = moment(
+    const date = moment(
       `${number}-${this.getMonth() + 1}-${this.getYear()}`,
       'D/M/YYYY'
     )._i;

@@ -1,6 +1,5 @@
 /* eslint-disable indent */
-import * as firebase from 'firebase';
-import { database, databaseRef } from '../firebase';
+import { database } from '../firebase';
 import { getUser } from './userActions';
 
 export const GET_LOGS_LIST_REQUEST = 'GET_LOGS_LIST_REQUEST';
