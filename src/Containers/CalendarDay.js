@@ -9,17 +9,17 @@ import Typography from '@material-ui/core/Typography';
 import AddIcon from '@material-ui/icons/Add';
 import TimeTrackModal from '../Components/TimeTrackModal';
 import {withStyles} from '@material-ui/core';
-
-const styles = theme => ({
-    title: {
-        color: 'red'
-    }
-})
+import { hexToRgb, whiteOrBlackFont } from './../helpers/helpers';
+import {
+    ZERO_HOURS_COLOR, 
+    ONE_FOUR_HOURS_COLOR, 
+    FIVE_EIGHT_HOURS_COLOR, 
+    NINE_PLUS_HOURS_COLOR
+} from '../constants/colorConstants';
 
 class CalendarDay extends Component {
     constructor(props) {
         super(props);
-
         this.state = {
             day: this.props.day,
             date: this.props.date,
@@ -46,6 +46,7 @@ class CalendarDay extends Component {
             return ({ hours: hours })
         }
     }
+
     showAddButton = () => {
         this.setState({ showAddButton: true })
     }
@@ -66,31 +67,34 @@ class CalendarDay extends Component {
         }
     }
 
-    hexToRgb(hex) {
-        var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-        return result ? {
-            r: parseInt(result[1], 16),
-            g: parseInt(result[2], 16),
-            b: parseInt(result[3], 16)
-        } : null;
+    getColorFromHours = (hours) => {
+        let color = ZERO_HOURS_COLOR;
+        if(hours >= 9){
+            color = NINE_PLUS_HOURS_COLOR;
+        }
+        else if(hours >= 5){
+            color = FIVE_EIGHT_HOURS_COLOR
+        }
+        else if(hours >= 1){
+            color = ONE_FOUR_HOURS_COLOR;
+        }
+        return color;
     }
 
     render() {
-        let color = (this.state.hours > 0 ? (this.state.hours > 4 ? (this.state.hours > 8 ? '#7A89C2' : '#AFA2FF') : '#E3D7FF') : '#FDFCFF');
-        let colorRGB = this.hexToRgb(color);
-        let fontColor = (colorRGB.r * 0.299 + colorRGB.g * 0.587 + colorRGB.b * 0.114) > 186 ? '#000000' : '#ffffff';
+        let color = this.getColorFromHours(this.state.hours);
+        let colorRGB = hexToRgb(color);
+        let fontColor = whiteOrBlackFont(colorRGB);
         let {classes} = this.props;
         return (
             <Card
                 onMouseEnter={this.showAddButton}
                 onMouseLeave={this.hideAddButton}
-                style={{
-                    boxShadow: '1px',
-                    backgroundColor: color,
-                }}
+                className = {classes.calendarDayCard}
+                style = {{backgroundColor: color}}
             >
-                <CardActionArea onClick={this.openTrackModal} style={{ width: '100%', height: '100%' }}>
-                        <p style={{ color: fontColor, paddingLeft : '24px', fontSize : '1.5em' }}>
+                <CardActionArea onClick={this.openTrackModal} className = {classes.fullWidthAndHeight}>
+                        <p style={{ color: fontColor}} className = {classes.dayNumber}>
                             {this.state.day}
                         </p>
                     <CardContent>
@@ -115,4 +119,4 @@ class CalendarDay extends Component {
     }
 }
 
-export default withStyles(styles)(CalendarDay);
+export default CalendarDay;

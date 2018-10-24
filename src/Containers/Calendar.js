@@ -18,6 +18,12 @@ import {
 } from '@material-ui/core';
 import CalendarDay from './CalendarDay';
 import { validateYear } from './../validators/validators';
+import {
+  ZERO_HOURS_COLOR,
+  ONE_FOUR_HOURS_COLOR,
+  FIVE_EIGHT_HOURS_COLOR,
+  NINE_PLUS_HOURS_COLOR
+} from '../constants/colorConstants';
 
 const styles = theme => ({
   root: {
@@ -40,7 +46,20 @@ const styles = theme => ({
   tableCell: {
     padding: '0.5%'
   },
-
+  redTitle: {
+    color: 'red'
+  },
+  calendarDayCard: {
+    boxShadow: '1px',
+  },
+  fullWidthAndHeight: {
+    width: '100%',
+    height: '100%'
+  },
+  dayNumber: {
+    paddingLeft: '24px',
+    fontSize: '1.5em'
+  },
   circularProgressContainer: {
     margin: 'auto',
     width: '10%',
@@ -56,71 +75,70 @@ const styles = theme => ({
 });
 
 class Calendar extends Component {
+  weekdays = moment.weekdays();
+
+  weekdaysShort = moment.weekdaysShort();
+
+  months = moment.months();
+
+  monthsShort = moment.monthsShort();
+
   constructor(props) {
     super(props);
     this.state = {
-      logs: this.props.logs,
       dateContext: moment(),
-      showMonthPopus: false,
-      showYearPopup: false
     };
   }
 
-  weekdays = moment.weekdays();
-  weekdaysShort = moment.weekdaysShort();
-  months = moment.months();
-  monthsShort = moment.monthsShort();
+  getYear = () => this.state.dateContext.format('YYYY');
 
-  getYear = () => {
-    return this.state.dateContext.format('YYYY');
-  };
-  getMonth = () => {
-    return this.state.dateContext.month();
-  };
-  getDaysInMonth = () => {
-    return this.state.dateContext.daysInMonth();
-  };
-  getCurrentDate = () => {
-    return this.state.dateContext.get('date');
-  };
+  getMonth = () => this.state.dateContext.month();
+
+  getDaysInMonth = () => this.state.dateContext.daysInMonth();
+
+  getCurrentDate = () => this.state.dateContext.get('date');
+
   getCurrentDay = () => {
     return this.state.dateContext.format('DD');
   };
 
   getFirstDayOfMonth = () => {
-    let dateContext = this.state.dateContext;
-    let firstDay = moment(dateContext)
+    const { dateContext } = this.state;
+    const firstDay = moment(dateContext)
       .startOf('month')
       .format('d');
     return firstDay;
   };
+
   getLastDayOfMonth = () => {
-    let dateContext = this.state.dateContext;
-    let lastDay = moment(dateContext)
+    const { dateContext } = this.state;
+    const lastDay = moment(dateContext)
       .endOf('month')
       .format('d');
     return lastDay;
   };
-  setMonth = event => {
-    let month = event.target.value;
+
+  setMonth = (event) => {
+    const month = event.target.value;
     this.setState({
-      dateContext: moment(this.state.dateContext).set('month', month)
+      dateContext: moment(this.state.dateContext).set('month', month),
     });
   };
-  setYear = event => {
-    let newYear = event.target.value;
+
+  setYear = (event) => {
+    const newYear = event.target.value;
     if (validateYear(newYear)) {
       this.setState({
-        dateContext: moment(this.state.dateContext).set('year', newYear)
+        dateContext: moment(this.state.dateContext).set('year', newYear),
       });
     }
   };
 
-  
 
-  mapCalendarRow = (row, classes) => {
-    return row.map(day => (
-      <TableCell className={classes.tableCell}>
+
+  mapCalendarRow = (row, classes) => (
+    row.map((day, index) => (
+      <TableCell className={classes.tableCell} key={`calendar-row-${index}`}>
         {day !== '' ? (
           <CalendarDay
             key={
@@ -135,12 +153,12 @@ class Calendar extends Component {
           />
         ) : null}
       </TableCell>
-    ))
-  }
+    )))
+  
 
   mapCalendarRows = (rows, classes) => {
     return rows.map((row, index) => (
-      <TableRow className={classes.tableRow} key = {`calendar-row-${index}`}>
+      <TableRow className={classes.tableRow} key={`calendar-row-${index}`}>
         {this.mapCalendarRow(row, classes)}
       </TableRow>
     ))
@@ -148,10 +166,10 @@ class Calendar extends Component {
 
   mapMenuItems = (items) => {
     return items.map((item, index) => (
-        <MenuItem key={item} value={index}>
-          {item}
-        </MenuItem>
-        ))
+      <MenuItem key={item} value={index}>
+        {item}
+      </MenuItem>
+    ))
   }
 
   mapDisplayElemsIntoRows = (displayElems) => {
@@ -182,11 +200,11 @@ class Calendar extends Component {
 
   mapStringArrayIntoTableCells = (stringArray) => {
     return stringArray.map((string, index) => (
-      <TableCell key = {`table-item-${string}-${index}`}>{string}</TableCell>
+      <TableCell key={`table-item-${string}-${index}`}>{string}</TableCell>
     ))
   }
 
-  getDateByNumber = number => {
+  getDateByNumber = (number) => {
     let date = moment(
       `${number}-${this.getMonth() + 1}-${this.getYear()}`,
       'D/M/YYYY'

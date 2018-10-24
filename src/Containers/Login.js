@@ -1,8 +1,11 @@
+/* eslint-disable indent */
 import React, { Component } from 'react';
-import PostCard from './../Components/PostCard';
+import { connect } from 'react-redux';
 import { Button, Input, InputLabel } from '@material-ui/core';
-import { login, getUser } from '../Actions/UserActions';
-import { connect } from "react-redux";
+import _ from 'lodash';
+import PostCard from '../Components/PostCard';
+import { login, getUser } from '../Actions/userActions';
+import { validateEmail } from '../validators/validators';
 
 
 class Login extends Component {
@@ -12,52 +15,41 @@ class Login extends Component {
             email: '',
             password: '',
             inputErrors: [],
-        }
+        };
     }
+
     componentWillMount() {
         this.props.getUser();
-        if(sessionStorage.getItem('userEmail')){
-            this.props.history.push('/');
-        }
     }
-
-    validateEmail = (email) => {
-        let regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-        return regex.test(String(email).toLowerCase());
-    }
-
-    /*validatePassword = (password) => {
-        let regex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/
-        return regex.test(String(password).toLowerCase());
-    }*/
 
     validateForm = () => {
         let inputError = '';
         let isValid = true;
-        if(!this.validateEmail(this.state.email)){
+        if (!validateEmail(this.state.email)) {
             inputError = 'Please, enter a valid email';
             isValid = false;
         }
-        if(!isValid){
-            this.setState({inputErrors: [...this.state.inputErrors, inputError]});
+        if (!isValid) {
+            this.setState({ inputErrors: [...this.state.inputErrors, inputError] });
         }
         return isValid;
     }
 
     handleLogin = () => {
-        if(this.validateForm()){
+        if (this.validateForm()) {
             this.login();
         }
     }
 
     login = () => {
-        this.props.login(this.state.email, this.state.password).then(response => {
-            sessionStorage.setItem('userEmail', response.user.email);
-            this.props.history.replace('/');
-        }).catch(err => { 
-
-            this.setState({inputErrors:[...this.state.inputErrors, err.message] }) 
-        })
+        this.props.login(this.state.email, this.state.password)
+            .then(response => {
+                if (response.user) {
+                    this.props.history.replace('/');
+                }
+            }).catch(err => {
+                this.setState({ inputErrors: [...this.state.inputErrors, err.message] })
+            })
     }
 
     render() {
@@ -68,33 +60,33 @@ class Login extends Component {
                 body={
                     <div>
                         <div style={{ paddingTop: '10px', paddingBottom: '10px' }}>
-                            <InputLabel htmlFor="login-email-input">Email:</InputLabel>
+                            <InputLabel htmlFor='login-email-input'>Email:</InputLabel>
                             <Input
-                                id="login-email-input"
+                                id='login-email-input'
                                 type='email'
                                 value={this.state.email}
-                                error = {this.state.inputErrors.length !== 0}
+                                error={this.state.inputErrors.length !== 0}
                                 onChange={(event) => {
-                                    this.setState({ email: event.target.value, inputErrors: []})
+                                    this.setState({ email: event.target.value, inputErrors: [] })
                                 }}
                             />
                         </div>
                         <div style={{ paddingTop: '10px', paddingBottom: '10px' }}>
-                            <InputLabel htmlFor="login-password-input">Password:</InputLabel>
+                            <InputLabel htmlFor='login-password-input'>Password:</InputLabel>
 
                             <Input
-                                id="login-password-input"
+                                id='login-password-input'
                                 type='password'
                                 value={this.state.password}
-                                error = {this.state.inputErrors.length !== 0}
+                                error={this.state.inputErrors.length !== 0}
                                 onChange={(event) => {
                                     this.setState({ password: event.target.value, inputErrors: [] })
                                 }}
                             />
                         </div>
-                {this.state.inputError === '' ? null : <span style = {{color: 'red'}}>{this.state.inputErrors.map((error, index) => (
-                    <p key = {index}> {error}</p>
-                ))}</span>}
+                        {this.state.inputError === '' ? null : <span style={{ color: 'red' }}>{this.state.inputErrors.map((error, index) => (
+                            <p key={index}> {error}</p>
+                        ))}</span>}
 
                     </div>
 
@@ -109,4 +101,13 @@ class Login extends Component {
     }
 }
 
-export default connect(null, { login, getUser })(Login);
+const mapStateToProps = state => ({
+    user: state.user,
+});
+
+const mapDispatchToProps = dispatch => ({
+    getUser: () => dispatch(getUser()),
+    login: (email, password) => dispatch(login(email, password)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Login);

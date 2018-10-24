@@ -1,25 +1,19 @@
-import React, { Component } from "react";
-import Calendar from "./Calendar";
-import ButtonAppBar from "../AppBar";
-import { connect } from "react-redux";
-import { getLogs, setLog } from '../Actions/LogsActions';
-import {getUser} from '../Actions/UserActions';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import Calendar from './Calendar';
+import ButtonAppBar from '../AppBar';
+import { getLogsList, setLog } from '../Actions/logsActions';
+import { getUser } from '../Actions/userActions';
 
 export class App extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      logs : this.props.logs
-    }
-  }
-
   componentWillMount() {
-    this.props.getLogs();
+    this.props.getLogsList();
+    this.props.getUser();
   }
 
   render() {
     return (
-      <div >
+      <div>
         <ButtonAppBar {...this.props} />
         <Calendar
           {...this.props}
@@ -30,15 +24,14 @@ export class App extends Component {
 }
 
 const mapStateToProps = state => ({
-  logs: state.logs,
-  user: state.user,
-})
+    logs: state.logs.logsList,
+    user: state.user,
+  });
 
 const mapDispatchToProps = dispatch => ({
-  getLogs: () => dispatch(getLogs()),
+  getLogsList: () => dispatch(getLogsList()),
   setLog: log => dispatch(setLog(log)),
   getUser: () => dispatch(getUser()),
-})
+});
 
-export default connect(mapStateToProps,mapDispatchToProps)(App);
-
+export default connect(mapStateToProps, mapDispatchToProps)(App);

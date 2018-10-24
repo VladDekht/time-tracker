@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import ButtonAppBar from "../AppBar";
 import { connect } from "react-redux";
-import {getUser} from '../Actions/UserActions';
+import {getUser} from '../Actions/userActions';
 import {Card, CardHeader, CardContent, Button} from '@material-ui/core';
 
 

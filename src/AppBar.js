@@ -1,15 +1,16 @@
+/* eslint-disable indent */
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
+import _ from 'lodash';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import { Menu, MenuItem, Fade } from '@material-ui/core/';
-import { logout } from './Actions/UserActions';
-import { connect } from "react-redux";
+import { connect } from 'react-redux';
 import { compose } from 'redux';
-
+import { logout, getUser } from './Actions/userActions';
 
 const styles = {
   root: {
@@ -24,7 +25,6 @@ const styles = {
   },
 };
 
-
 class ButtonAppBar extends React.Component {
   constructor(props) {
     super(props);
@@ -33,7 +33,7 @@ class ButtonAppBar extends React.Component {
     };
   }
 
-  handleClick = event => {
+  handleClick = (event) => {
     this.setState({ anchorEl: event.currentTarget });
   };
 
@@ -42,11 +42,10 @@ class ButtonAppBar extends React.Component {
   };
 
   logout = () => {
-    this.props.logout().then(() => {
-      sessionStorage.removeItem('userEmail');
-      this.props.history.push('/login');
-    });
-  }
+    this.handleClose();
+    this.props.logout();
+    this.props.history.push('/login');
+  };
 
   render() {
     const { classes } = this.props;
@@ -57,14 +56,14 @@ class ButtonAppBar extends React.Component {
             <Typography variant="title" color="inherit" className={classes.grow}>
               Time Tracking
             </Typography>
-            {sessionStorage.getItem('userEmail') ?
+            {!_.isEmpty(this.props.user.user) ? (
               <div>
                 <Button
                   aria-owns={this.state.anchorEl ? 'logout-menu' : null}
                   aria-haspopup="true"
                   onClick={this.handleClick}
                 >
-                <p style = {{color: 'white'}}>{sessionStorage.getItem('userEmail')}</p>
+                  <p style={{ color: 'white' }}>{this.props.user.user.email}</p>
                 </Button>
                 <Menu
                   id="logout-menu"
@@ -73,13 +72,20 @@ class ButtonAppBar extends React.Component {
                   onClose={this.handleClose}
                   TransitionComponent={Fade}
                 >
-                  <MenuItem onClick={() => {
-                    this.handleClose();
-                    this.logout();
-                  }}>Logout</MenuItem>
+                  <MenuItem
+                    onClick={() =>
+                      this.logout()
+                    }
+                  >
+                    Logout
+                  </MenuItem>
                 </Menu>
               </div>
-              : <Button color="inherit" onClick={this.props.history.push('/login')}>Login</Button>}
+            ) : (
+                <Button color="inherit" onClick={this.props.history.push('/login')}>
+                  Login
+              </Button>
+              )}
           </Toolbar>
         </AppBar>
       </div>
@@ -91,4 +97,19 @@ ButtonAppBar.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default compose(withStyles(styles), connect(null, { logout }))(ButtonAppBar);
+const mapStateToProps = state => ({
+  user: state.user,
+});
+
+const mapDispatchToProps = dispatch => ({
+  getUser: () => dispatch(getUser()),
+  logout: () => dispatch(logout()),
+});
+
+export default compose(
+  withStyles(styles),
+  connect(
+    mapStateToProps,
+    mapDispatchToProps,
+  ),
+)(ButtonAppBar);
