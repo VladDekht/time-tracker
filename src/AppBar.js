@@ -10,7 +10,7 @@ import Button from '@material-ui/core/Button';
 import { Menu, MenuItem, Fade } from '@material-ui/core/';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
-import { logout, getUser } from './Actions/userActions';
+import { logout, getUser } from './actions/userActions';
 
 const styles = {
   root: {
@@ -48,44 +48,46 @@ class ButtonAppBar extends React.Component {
   };
 
   render() {
-    const { classes } = this.props;
+    const { classes, history, userInfo } = this.props;
+    const { anchorEl } = this.state;
     return (
       <div className={classes.root}>
         <AppBar position="static">
           <Toolbar>
-            <Typography variant="title" color="inherit" className={classes.grow}>
+            <Typography
+              variant="title"
+              color="inherit"
+              className={classes.grow}
+            >
               Time Tracking
             </Typography>
-            {!_.isEmpty(this.props.user.user) ? (
+            {!_.isEmpty(userInfo.user) ? (
               <div>
                 <Button
-                  aria-owns={this.state.anchorEl ? 'logout-menu' : null}
+                  aria-owns={anchorEl ? 'logout-menu' : null}
                   aria-haspopup="true"
                   onClick={this.handleClick}
                 >
-                  <p style={{ color: 'white' }}>{this.props.user.user.email}</p>
+                  <p style={{ color: 'white' }}>{userInfo.user.email}</p>
                 </Button>
                 <Menu
                   id="logout-menu"
-                  anchorEl={this.state.anchorEl}
-                  open={Boolean(this.state.anchorEl)}
+                  anchorEl={anchorEl}
+                  open={Boolean(anchorEl)}
                   onClose={this.handleClose}
                   TransitionComponent={Fade}
                 >
-                  <MenuItem
-                    onClick={() =>
-                      this.logout()
-                    }
-                  >
-                    Logout
-                  </MenuItem>
+                  <MenuItem onClick={() => this.logout()}>Logout</MenuItem>
                 </Menu>
               </div>
             ) : (
-                <Button color="inherit" onClick={this.props.history.push('/login')}>
-                  Login
+              <Button
+                color="inherit"
+                onClick={history.push('/login')}
+              >
+                Login
               </Button>
-              )}
+            )}
           </Toolbar>
         </AppBar>
       </div>
@@ -93,12 +95,8 @@ class ButtonAppBar extends React.Component {
   }
 }
 
-ButtonAppBar.propTypes = {
-  classes: PropTypes.object.isRequired,
-};
-
 const mapStateToProps = state => ({
-  user: state.user,
+  userInfo: state.user,
 });
 
 const mapDispatchToProps = dispatch => ({
